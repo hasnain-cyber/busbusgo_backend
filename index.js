@@ -1,11 +1,25 @@
-const app = require('express')();
+const express = require("express");
+const cors = require('cors');
+const mongoose = require("mongoose");
+const dotenv = require('dotenv');
+const app = express();
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
+dotenv.config();
+app.use(cors());
+app.use(express.json());
 
 const PORT = process.env.PORT || 8081;
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}...`);
-});
+
+// database part
+mongoose.connect(
+    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.wequq3y.mongodb.net/?retryWrites=true&w=majority`,
+);
+const conn = mongoose.connection;
+conn.on("error", (error) => console.log(error));
+conn.once("open", () => console.log("Connected to Database!"));
+
+// routes part
+const authRoutes = require('./routes/authRoutes');
+app.use("/auth", authRoutes);
+
+app.listen(PORT, () => console.log(`Server ready and running on PORT ${PORT}!`));
