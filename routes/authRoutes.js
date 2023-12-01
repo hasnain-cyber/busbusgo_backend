@@ -34,8 +34,8 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.get('/login', async (req, res) => {
-    const credentials = req.headers.authorization;
+router.post('/login', async (req, res) => {
+    const credentials = req.headers.authorization.split(' ')[1];
     const email = credentials.split(':')[0];
     const password = credentials.split(':')[1];
 

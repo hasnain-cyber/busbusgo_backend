@@ -6,16 +6,16 @@ const busSchema = new mongoose.Schema({
         required: true,
         type: Number,
     },
-    occupied_seats: {
+    occupied_seats: [{
         required: true,
-        type: Number,
-    },
+        type: Boolean,
+    }],
     days_of_operation: {
         required: true,
         type: Number,
     },
     route: [{
-        type: nodeModel.schema,
+        type: String,
         default: null,
     }],
     current_location: {

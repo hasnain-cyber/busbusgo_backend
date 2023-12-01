@@ -9,7 +9,7 @@ const edgeSchema = new mongoose.Schema({
         required: true,
         type: String,
     },
-    distance: {
+    weight: {
         required: true,
         type: Number,
     },

@@ -21,5 +21,9 @@ conn.once("open", () => console.log("Connected to Database!"));
 // routes part
 const authRoutes = require('./routes/authRoutes');
 app.use("/auth", authRoutes);
+const adminAuthRoutes = require('./routes/adminAuthRoutes');
+app.use("/adminAuth", adminAuthRoutes);
+const adminRoutes = require('./routes/adminRoutes');
+app.use("/admin", adminRoutes);
 
 app.listen(PORT, () => console.log(`Server ready and running on PORT ${PORT}!`));
