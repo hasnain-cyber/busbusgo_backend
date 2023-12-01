@@ -9,6 +9,10 @@ const bookingSchema = new mongoose.Schema({
         required: true,
         type: String,
     },
+    customer_id: {
+        required: true,
+        type: String,
+    },
     start_node_id: {
         required: true,
         type: String,

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const nodeModel = require('./nodeModel');
 
 const busSchema = new mongoose.Schema({
     capacity: {

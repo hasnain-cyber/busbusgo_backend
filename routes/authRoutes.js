@@ -18,13 +18,14 @@ router.post('/register', async (req, res) => {
     try {
         const query = await customerModel.findOne({ email: req.body.email });
         if (!query) {
-            const user = await customerModel.create({
+            let user = await customerModel.create({
                 name: req.body.name,
                 email: req.body.email,
                 password: req.body.password,
             });
             const token = generateJWTToken(v4(), req.body.name, req.body.email, false, '0', Date());
-            res.status(StatusCodes.CREATED).json({ user, token });
+            user = { ...user._doc, token };
+            res.status(StatusCodes.CREATED).json(user);
         } else {
             res.status(StatusCodes.BAD_REQUEST).json({ "message": getReasonPhrase(StatusCodes.BAD_REQUEST) });
         }
@@ -43,7 +44,9 @@ router.post('/login', async (req, res) => {
         const query = await customerModel.findOne({ email, password });
         if (query) {
             const token = generateJWTToken(query._id, query.name, query.email, query.password);
-            res.status(StatusCodes.OK).send({ user: query, token });
+            // enrich query with token
+            const user = { ...query._doc, token };
+            res.status(StatusCodes.OK).send(user);
         } else {
             res.status(StatusCodes.UNAUTHORIZED).json({ "message": getReasonPhrase(StatusCodes.UNAUTHORIZED) });
         }

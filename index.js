@@ -25,5 +25,9 @@ const adminAuthRoutes = require('./routes/adminAuthRoutes');
 app.use("/adminAuth", adminAuthRoutes);
 const adminRoutes = require('./routes/adminRoutes');
 app.use("/admin", adminRoutes);
+const busRoutes = require('./routes/busRoutes');
+app.use("/bus", busRoutes);
+const customerRoutes = require('./routes/customerRoutes');
+app.use("/bus", customerRoutes);
 
 app.listen(PORT, () => console.log(`Server ready and running on PORT ${PORT}!`));

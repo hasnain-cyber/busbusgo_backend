@@ -1,15 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const nodeModel = require('../models/nodeModel');
 const edgeModel = require('../models/edgeModel');
 const busModel = require('../models/busModel');
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const { checkAdmin } = require("../middlewares");
-
-const generateJWTToken = (used_id, name, email, password) => {
-    return jwt.sign({ used_id, name, email, password }, process.env.JWT_SECRET_KEY);
-}
 
 router.post('/addNode', [checkAdmin], async (req, res) => {
     // create a node and send it as response
