@@ -4,6 +4,7 @@ const busModel = require('../models/busModel');
 const edgeModel = require('../models/edgeModel');
 const bookingModel = require('../models/bookingModel');
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
+const jwt = require('jsonwebtoken');
 
 const find_distance = (adjacencyList, source_node_id, destination_node_id) => {
     // use dijstra's algorithm to find the shortest path between the source and destination nodes
@@ -130,6 +131,39 @@ router.post("/bookSeat", async (req, res) => {
                 cost: 0,
                 status: 1
             });
+            res.status(StatusCodes.OK).json({ "message": getReasonPhrase(StatusCodes.OK) });
+        } else {
+            res.status(StatusCodes.BAD_REQUEST).json({ "message": getReasonPhrase(StatusCodes.BAD_REQUEST) });
+        }
+    } catch (err) {
+        console.log("🚀 ~ file: busRoutes.js:189 ~ router.post ~ err:", err)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ "message": getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR) });
+    }
+});
+
+router.post("/cancelSeat", async (req, res) => {
+    if (!req.headers.authorization || !req.body.booking_id) {
+        res.status(StatusCodes.BAD_REQUEST).json({ "message": getReasonPhrase(StatusCodes.BAD_REQUEST) });
+        return;
+    }
+
+    const decryptedToken = jwt.verify(req.headers.authorization.split(" ")[1], process.env.JWT_SECRET_KEY);
+    if (!decryptedToken) {
+        res.status(StatusCodes.BAD_REQUEST).json({ "message": getReasonPhrase(StatusCodes.BAD_REQUEST) });
+        return;
+    }
+
+    const customer_id = decryptedToken.used_id;
+
+    try {
+        const booking = await bookingModel.findOne({ _id: req.body.booking_id });
+        if (booking) {
+            if (booking.customer_id !== customer_id) {
+                res.status(StatusCodes.BAD_REQUEST).json({ "message": getReasonPhrase(StatusCodes.BAD_REQUEST) });
+                return;
+            }
+            const updatedBooking = await bookingModel.updateOne({ _id: req.body.booking_id }, { status: 2 });
+            const updatedBus = await busModel.updateOne({ _id: booking.bus_id }, { $set: { [`occupied_seats.${booking.seat_id}`]: false } });
             res.status(StatusCodes.OK).json({ "message": getReasonPhrase(StatusCodes.OK) });
         } else {
             res.status(StatusCodes.BAD_REQUEST).json({ "message": getReasonPhrase(StatusCodes.BAD_REQUEST) });
